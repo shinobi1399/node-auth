@@ -1,0 +1,21 @@
+version: '3'
+services:
+    web:
+        build: .
+        volumes:
+            - ".:/app/mnt"
+        environment:
+            - PORT=${PORT:-53000}
+            - MONGOHOST=mongo:27017
+        ports:
+            - "${PORT:-53000}:${PORT:-53000}"
+        links:
+            - mongo
+    mongo:
+        image:  mongo:3
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongo-data:/data/db
+volumes:
+    mongo-data:
