@@ -1,9 +1,10 @@
-import * as e from "express";
+import * as e from 'express';
 import * as mongo from 'mongodb';
 
 let client = mongo.MongoClient;
 main();
 async function main() {
+
     let mongoHost = process.env.MONGOHOST || 'localhost:27017';
     let mongoUrl = `mongodb://${mongoHost}/node-auth`;
     console.log('connecting to mongo url ' + mongoUrl);
