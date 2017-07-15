@@ -11,7 +11,8 @@
         "noUnusedParameters": false,
         "moduleResolution": "node",
         "sourceMap": true,
-        "inlineSources": true
+        "inlineSources": true,
+        "inlineSourceMap": true
     },
     "include": [
         "src/**/*",

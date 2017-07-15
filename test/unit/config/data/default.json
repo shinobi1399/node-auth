@@ -1,0 +1,6 @@
+{
+    "say": "hello world",
+    "nested": {
+        "say": "hello nested"
+    }
+}
