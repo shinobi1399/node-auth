@@ -6,7 +6,7 @@ export interface IConfigEx extends IConfig {
     [key: string]: any;
 }
 
-export class Config {
+class Config {
     public static get isProduction() {
         return process.env.NODE_ENV === 'production';
     }
@@ -21,5 +21,5 @@ export class Config {
 
 }
 
-const configMixin: IConfigEx = Object.assign(Config, c);
-export default configMixin;
+const config: IConfigEx = Object.assign(Config, c);
+export default config;

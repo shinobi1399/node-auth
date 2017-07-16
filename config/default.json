@@ -1,7 +1,17 @@
 {
-    "dbConfig": {
+    "db": {
         "host": "localhost",
         "port": 5984,
         "dbName": "node-auth"
+    },
+    "logging": {
+        "useFile": true,
+        "useConsole": true,
+        "minLevel": "info",
+        "fileOptions": {
+            "filename": "node-auth.log",
+            "maxsize": 30000000,
+            "maxFiles": 10
+        }
     }
 }
