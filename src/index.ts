@@ -3,7 +3,7 @@ import * as mongo from 'mongodb';
 import * as morgan from 'morgan';
 import {getLogger, LoggingConfig, LoggingManager} from './common/logging/logging';
 import config from './common/config/config';
-import mongoMigrate from "./common/data/mongo-migrate";
+import mongoMigrate from './common/data/mongo-migrate';
 import {addMigrations} from "./migrations";
 
 let client = mongo.MongoClient;
