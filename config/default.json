@@ -1,8 +1,9 @@
 {
+  "express": {
+    "port": 3000
+  },
     "db": {
-        "host": "localhost",
-        "port": 5984,
-        "dbName": "node-auth"
+      "connectionUrl": "mongodb://localhost:27017/node-auth"
     },
     "logging": {
         "useFile": true,

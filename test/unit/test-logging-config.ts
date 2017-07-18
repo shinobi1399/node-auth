@@ -1,4 +1,4 @@
-import {getLogger, LoggingConfig, LoggingManager} from '../../src/logging/logging';
+import {getLogger, LoggingConfig, LoggingManager} from '../../src/common/logging/logging';
 import {expect} from 'chai';
 
 describe('logging config tests', function () {

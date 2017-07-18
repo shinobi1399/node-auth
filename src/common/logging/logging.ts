@@ -27,7 +27,7 @@ export class LoggingManager {
     }
 
     public static create(config: LoggingConfig): winston.LoggerInstance {
-        if (!config) {
+      if (!config || !config.minLevel) {
             throw new Error('Invalid logging config');
         }
         let logger = new winston.Logger();

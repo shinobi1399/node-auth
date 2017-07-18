@@ -1,33 +1,43 @@
-import * as e from 'express';
+import * as express from 'express';
 import * as mongo from 'mongodb';
 import * as morgan from 'morgan';
-import {getLogger, LoggingConfig, LoggingManager} from './logging/logging';
-import config from './config/config';
+import {getLogger, LoggingConfig, LoggingManager} from './common/logging/logging';
+import config from './common/config/config';
+import mongoMigrate from "./common/data/mongo-migrate";
+import {addMigrations} from "./migrations";
 
 let client = mongo.MongoClient;
 
+// Setup logging
 let loggingConfig = config.get<LoggingConfig>('logging');
 LoggingManager.configure(loggingConfig);
 
-main().catch(err => {
-    getLogger().error('unhandled error thrown. exiting', err);
-});
+// Read config params
+let mongoConnectionUrl = config.get<string>('db.connectionUrl') || 'mongodb://localhost/node-auth';
+let expressPort = process.env.PORT || config.get<Number>('express.port') || 3000;
 
 async function main() {
-    getLogger().info('Application starting');
-    let mongoHost = process.env.MONGOHOST || 'localhost:27017';
-    let mongoUrl = `mongodb://${mongoHost}/node-auth`;
-    console.log('connecting to mongo url ' + mongoUrl);
-    await client.connect(mongoUrl);
+  getLogger().info('Application starting');
+  getLogger().info('connecting to db ', mongoConnectionUrl);
+  let db = await client.connect(mongoConnectionUrl);
 
-    let app = e();
-    app.use(morgan('combined'));
-    app.get('/', (req, res) => {
-        res.send('hello world2');
-    });
+  getLogger().info('Updating db migrations');
+  addMigrations();
+  await mongoMigrate.migrate(db);
 
-    let PORT = process.env.PORT || 3000;
-    app.listen(PORT, function () {
-        console.log(`listening on port ${PORT}`);
-    });
+  let app = express();
+
+  app.use(morgan('combined'));
+  app.use('/public', express.static('./public'));
+  app.get('/', (req, res) => {
+    res.send('hello world2');
+  });
+
+  app.listen(expressPort, function () {
+    getLogger().info(`listening on port ${expressPort}`);
+  });
 }
+
+main().catch(err => {
+  getLogger().error('unhandled error thrown. exiting', err);
+});

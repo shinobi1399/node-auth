@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import config from '../../../src/config/config';
+import config from '../../../src/common/config/config';
 
 describe('config tests', function () {
     beforeEach(function () {
