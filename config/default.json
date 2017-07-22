@@ -10,7 +10,7 @@
         "useConsole": true,
         "minLevel": "info",
         "fileOptions": {
-            "filename": "node-auth.log",
+          "filename": "logs/node-auth.log",
             "maxsize": 30000000,
             "maxFiles": 10
         }

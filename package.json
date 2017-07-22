@@ -6,8 +6,8 @@
   "scripts": {
     "start": "rimraf dist && tsc && nodemon dist/src/index.js",
     "start:dev": "rimraf dist && tsc && nodemon --legacy-watch dist/index.js",
-    "test": "mocha",
-    "test:watch": "mocha -w"
+    "test": "cross-env NODE_CONFIG_DIR='test/unit/config/data' mocha test/**/test-*.ts",
+    "test:watch": "cross-env NODE_CONFIG_DIR='test/unit/config/data' mocha -w test/**/test-*.ts"
   },
   "repository": {
     "type": "git",
@@ -20,13 +20,18 @@
   },
   "homepage": "https://github.com/shinobi1399/node-auth#readme",
   "dependencies": {
+    "@types/bcrypt": "^1.0.0",
     "@types/express": "^4.0.36",
     "@types/mongodb": "^2.2.6",
+    "@types/mongoose": "^4.7.19",
     "@types/morgan": "^1.7.32",
     "@types/node": "^8.0.1",
     "@types/winston": "^2.3.3",
+    "bcrypt": "^1.0.2",
+    "bluebird": "^3.5.0",
     "config": "^1.26.1",
     "express": "^4.15.3",
+    "jsonwebtoken": "^7.4.1",
     "mongodb": "^2.2.29",
     "mongoose": "^4.11.3",
     "morgan": "^1.8.2",
@@ -45,6 +50,7 @@
     "gulp": "^3.9.1",
     "mocha": "^3.4.2",
     "nodemon": "^1.11.0",
+    "nyc": "^11.0.3",
     "rimraf": "^2.6.1",
     "ts-node": "^3.1.0",
     "tslint-eslint-rules": "^4.1.1",

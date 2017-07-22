@@ -1,6 +1,6 @@
-import {Collection, Db} from "mongodb";
-import {getLogger} from "../logging/logging";
-import {MongoUtils} from "./mongo-utils";
+import {Collection, Db} from 'mongodb';
+import {getLogger} from '../logging/logging';
+import {MongoUtils} from './mongo-utils';
 
 const MIGRATION_TABLE_NAME = '_migration';
 
@@ -42,6 +42,7 @@ export class MigrationManager {
   public async migrate(db: Db, stopAtTimestamp?: number) {
     this.initialiseMigrationTable();
     let migrationTable = db.collection(MIGRATION_TABLE_NAME);
+
     let migrations = this._migrations.sort(this.sortMigrations);
     if (migrations.length === 0) {
       getLogger().info('No db migrations found');
@@ -57,7 +58,9 @@ export class MigrationManager {
         if (isProcessed) {
           getLogger().info(`skipping migration ${migrationName}`);
         } else {
+          getLogger().info(`performing migration ${migrationName}`);
           await this.performMigration(migrationName, migration, db, migrationTable);
+          getLogger().info('finished migration: ' + migrationName);
         }
       }
       catch (err) {
@@ -117,5 +120,5 @@ export interface Migration {
    * the actions to perform on the database when the migraiton is applied.
    * @param {Db} db
    */
-  apply(db: Db): void;
+  apply(db: Db): Promise<void>;
 }
