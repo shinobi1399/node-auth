@@ -12,15 +12,14 @@ export class InitialSetup implements Migration {
   }
 
   async apply(db: Db) {
-    let identityStore = db.collection('identityStores');
-
+    let identityStore = db.collection('identity-stores');
     let store: any = {name: 'System identity store', description: ''};
     await identityStore.insertOne(store);
     getLogger().info(`Created default identity store with id ${store._id}`);
 
     let systemCollection = db.collection('system');
     let system = {identityStoreId: store._id};
-    await systemCollection.insertOne(store);
+    await systemCollection.insertOne(system);
     getLogger().info(`Created system with id ${store._id}`);
 
     let userCollection = db.collection('users');

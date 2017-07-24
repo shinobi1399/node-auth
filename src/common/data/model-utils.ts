@@ -1,4 +1,5 @@
 import * as m from 'mongoose';
+import {Model} from 'mongoose';
 
 /**
  * Setup mongoose model with schema. If the model has already been setup return the existing model
@@ -11,7 +12,9 @@ import * as m from 'mongoose';
  * @param {string} collection
  * @returns {"mongoose".Model<TInterface extends "mongoose".Document>}
  */
-export function setupModel<TInterface extends m.Document>(modelName: string, schema: m.Schema, collection?: string) {
+export function setupModel<TInterface extends m.Document>(modelName: string,
+                                                          schema: m.Schema,
+                                                          collection?: string): Model<TInterface> {
   if (!collection) {
     collection = modelName;
   }

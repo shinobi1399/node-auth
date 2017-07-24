@@ -1,11 +1,12 @@
-import * as m from 'mongoose';
+import * as mongoose from 'mongoose';
 import {addAuditSaveMiddleware, setupModel} from '../common/data/model-utils';
+import {RandomGenerator} from '../common/utilities/RandomGenerator';
 
 /**
  * A identity store for users.
  * Multiple stores can be setup and used to setup separate user bases for different apps.
  */
-export interface User extends m.Document {
+export interface UserBase {
   username: string;
   name: string;
   email: string;
@@ -16,29 +17,49 @@ export interface User extends m.Document {
   userMetadata: object;
   appMetadata: object;
   mustChangePassword: boolean;
-  identityStoreId: m.Types.ObjectId;
+  identityStoreId: mongoose.Types.ObjectId;
 
   addDate?: Date;
   editDate?: Date;
 }
 
-let userSchema = new m.Schema(
+/**
+ * Combines the user model and mongoose base interfaces together.
+ */
+export interface User extends UserBase, mongoose.Document {
+
+}
+
+let userSchema = new mongoose.Schema(
   {
     username: {type: String},
-    name: {type: String},
+    name: {type: String, default: ''},
     email: {type: String},
-    password: {type: String},
-    hashAlgorithm: {type: String},
-    emailVerified: {type: Boolean},
-    disabled: {type: Boolean},
-    userMetadata: {type: m.SchemaTypes.Mixed},
-    appMetadata: {type: m.SchemaTypes.Mixed},
-
+    password: {type: String, default: () => RandomGenerator.password(8)},
+    emailVerified: {type: Boolean, default: false},
+    disabled: {type: Boolean, default: false},
+    userMetadata: {type: mongoose.SchemaTypes.Mixed, default: {}},
+    appMetadata: {type: mongoose.SchemaTypes.Mixed, default: {}},
+    mustChangePassword: {type: Boolean, default: false},
+    identityStoreId: {type: mongoose.SchemaTypes.ObjectId, required: true},
     addDate: {type: Date},
     editDate: {type: Date}
   });
-
 addAuditSaveMiddleware(userSchema);
 
-export const UserModel = setupModel<User>(
-  'userModel', userSchema, 'Users');
+export interface UserModelEx extends mongoose.Model<User> {
+  userExists(username: string, store: mongoose.Types.ObjectId): boolean;
+}
+
+let UserModel: UserModelEx;
+
+userSchema.static('userExists', async function (username: string, store: mongoose.Types.ObjectId): Promise<boolean> {
+  let result = await UserModel.findOne({username: username, identityStoreId: store}, {_id: 1});
+  return !!result;
+});
+
+UserModel = <UserModelEx> setupModel<User>(
+  'userModel', userSchema, 'users');
+
+export {UserModel};
+

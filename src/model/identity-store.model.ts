@@ -23,4 +23,4 @@ let identityStoreSchema = new m.Schema(
 addAuditSaveMiddleware(identityStoreSchema);
 
 export const IdentityStoreModel = setupModel<IdentityStore>(
-  'IdentityStoreModel', identityStoreSchema, 'IdentityStores');
+  'IdentityStoreModel', identityStoreSchema, 'identity-stores');

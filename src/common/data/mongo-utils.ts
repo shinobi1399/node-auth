@@ -1,4 +1,4 @@
-import {Collection} from "mongodb";
+import {Collection} from 'mongodb';
 
 export class MongoUtils {
   /**
@@ -7,7 +7,7 @@ export class MongoUtils {
    * @param query
    * @returns {Promise<boolean>}
    */
-  public static async contains(collection: Collection<any>, query: any): Promise<boolean> {
+  public async contains(collection: Collection<any>, query: any): Promise<boolean> {
     let cursor = await collection.find(query).project({_id: 1}).limit(1);
 
     let result = await cursor.hasNext();
@@ -15,3 +15,5 @@ export class MongoUtils {
     return result;
   }
 }
+
+export const mongoUtils = new MongoUtils();

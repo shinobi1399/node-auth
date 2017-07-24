@@ -7,21 +7,35 @@ import {IdentityStore, IdentityStoreModel} from './identity-store.model';
  * Multiple stores can be setup and used to setup separate user bases for different apps.
  */
 export interface System extends m.Document {
-  identityStoreId: any;
+  identityStoreId: m.Types.ObjectId;
   addDate?: Date;
   editDate?: Date;
 
   getIdentityStore(): IdentityStore;
 }
 
-let systemSchema = new m.Schema(
-  {});
+export interface SystemModelEx extends m.Model<System> {
+  get(): Promise<System>;
+}
 
-systemSchema.method('getIdentityStore', async function () {
-  return await IdentityStoreModel.find({_id: this.identityStoreId}).limit(1);
+
+let systemSchema = new m.Schema(
+  {
+    identityStoreId: {type: m.SchemaTypes.ObjectId},
+    addDate: {type: Date},
+    editDate: {type: Date}
+  });
+
+systemSchema.method('getIdentityStore', async function (): Promise<IdentityStore | null> {
+  return await IdentityStoreModel.findById({_id: this.identityStoreId});
+});
+
+systemSchema.static('get', async function (): Promise<System> {
+  return await this.findOne({});
 });
 
 addAuditSaveMiddleware(systemSchema);
 
-export const SystemModel = setupModel<System>(
+let SystemModel: SystemModelEx = <SystemModelEx> setupModel<System>(
   'systemModel', systemSchema, 'system');
+export {SystemModel};

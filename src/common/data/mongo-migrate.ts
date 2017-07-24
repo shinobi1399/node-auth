@@ -1,6 +1,6 @@
 import {Collection, Db} from 'mongodb';
 import {getLogger} from '../logging/logging';
-import {MongoUtils} from './mongo-utils';
+import {mongoUtils} from './mongo-utils';
 
 const MIGRATION_TABLE_NAME = '_migration';
 
@@ -54,7 +54,7 @@ export class MigrationManager {
 
         let migrationName = `${migration.timestamp}: ${migration.description}`;
 
-        let isProcessed = await MongoUtils.contains(migrationTable, {timestamp: migration.timestamp});
+        let isProcessed = await mongoUtils.contains(migrationTable, {timestamp: migration.timestamp});
         if (isProcessed) {
           getLogger().info(`skipping migration ${migrationName}`);
         } else {
