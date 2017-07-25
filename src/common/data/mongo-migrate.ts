@@ -49,7 +49,6 @@ export class MigrationManager {
     }
 
     for (let migration of migrations) {
-      try {
         if (!!stopAtTimestamp && migration.timestamp > stopAtTimestamp) break;
 
         let migrationName = `${migration.timestamp}: ${migration.description}`;
@@ -62,10 +61,6 @@ export class MigrationManager {
           await this.performMigration(migrationName, migration, db, migrationTable);
           getLogger().info('finished migration: ' + migrationName);
         }
-      }
-      catch (err) {
-        throw err;
-      }
     }
   }
 
@@ -81,7 +76,7 @@ export class MigrationManager {
 
   private async performMigration(name: string, m, db: Db, migrationTable: Collection) {
     getLogger().info(`running migration ${name}`);
-    m.apply(db);
+    await m.apply(db);
     await migrationTable.insertOne(<MigrationInfo> {
       timestamp: m.timestamp,
       description: m.description,

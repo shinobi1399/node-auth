@@ -15,7 +15,7 @@ export class InitialSetup implements Migration {
     let identityStore = db.collection('identity-stores');
     let store: any = {name: 'System identity store', description: ''};
     await identityStore.insertOne(store);
-    getLogger().info(`Created default identity store with id ${store._id}`);
+    getLogger().info(`Created system identity store with id ${store._id}`);
 
     let systemCollection = db.collection('system');
     let system = {identityStoreId: store._id};
@@ -23,6 +23,8 @@ export class InitialSetup implements Migration {
     getLogger().info(`Created system with id ${store._id}`);
 
     let userCollection = db.collection('users');
+
+    await userCollection.createIndex({identityStoreId: 1, username: 1}, {unique: true});
     let password = RandomGenerator.password(20);
     let passwordHash = await hashUtils.hash(password);
     getLogger().info(`admin user password is ${password}`);
@@ -41,6 +43,7 @@ export class InitialSetup implements Migration {
         appMetadata: {},
         identityStoreId: store._id
       };
+
     await userCollection.insertOne(user);
   }
 

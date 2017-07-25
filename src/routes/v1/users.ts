@@ -8,11 +8,16 @@ export class UsersRouter {
     router.post('/', async function (req, res, next) {
       try {
         let user = await userService.createUser(req.body);
+        //TODO: figure out response for post.
         res.json(user);
       }
       catch (err) {
         next(err);
       }
+    });
+
+    router.put('/', async function (req, res, next) {
+
     });
 
     router.get('/hi', async function (req, res, next) {
