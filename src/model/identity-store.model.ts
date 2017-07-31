@@ -12,6 +12,10 @@ export interface IdentityStore extends m.Document {
   editDate?: Date;
 }
 
+export interface IdentityStoreModelEx extends m.Model<IdentityStore> {
+  exists(objectId: m.Types.ObjectId): boolean;
+}
+
 let identityStoreSchema = new m.Schema(
   {
     name: {type: String},
@@ -22,5 +26,15 @@ let identityStoreSchema = new m.Schema(
 
 addAuditSaveMiddleware(identityStoreSchema);
 
-export const IdentityStoreModel = setupModel<IdentityStore>(
+let IdentityStoreModel: IdentityStoreModelEx;
+
+identityStoreSchema.static('exists', async function (id: m.Types.ObjectId) {
+  let obj = await IdentityStoreModel.findById(id);
+
+  return !!obj;
+});
+
+IdentityStoreModel = <IdentityStoreModelEx> setupModel<IdentityStore>(
   'IdentityStoreModel', identityStoreSchema, 'identity-stores');
+
+export {IdentityStoreModel};

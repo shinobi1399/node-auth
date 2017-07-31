@@ -1,51 +1,58 @@
-import * as m from 'mongoose';
-import {User, UserModel} from '../model/user.model';
+import {User, UserBase, UserModel} from '../model/user.model';
 import {RandomGenerator} from '../common/utilities/RandomGenerator';
-import {IdentityStoreModel} from '../model/identity-store.model';
-import {mongoUtils} from '../common/data/mongo-utils';
-import {System, SystemModel} from '../model/system.model';
+import {SystemModel} from '../model/system.model';
+import {CreateUserDetails, createUserValidator} from '../Validators/create-user.validator';
+import {ValidationError} from '../Validators/validation-error';
+import {ValidationResultSet} from '../Validators/ValidationResultSet';
 
 export class UserService {
-  async createUser(userDetails, identityStoreId?: m.Types.ObjectId): Promise<User> {
-    //TODO: Think about validation
-    if (!identityStoreId) {
-      let system = <System> await SystemModel.findOne({});
-      identityStoreId = system.identityStoreId;
-    }
-
-    let store = await IdentityStoreModel.findById(identityStoreId);
-    if (!store) throw new Error('Identity store doess not exist: ' + identityStoreId);
-
-    if (!userDetails.username) throw new Error('Username is required field');
-
-    let userExists = await mongoUtils.contains(UserModel.collection,
-      {username: userDetails.username, identityStoreId: identityStoreId});
-    if (userExists) throw new Error('Username already taken');
-
-    if (!userDetails.email) throw new Error('Email address does not exist');
-    let emailExists = await mongoUtils.contains(UserModel.collection,
-      {email: userDetails.email, identityStoreId: identityStoreId});
-    if (emailExists) throw new Error('email address already used.');
-
-    let mustChangePassword = false;
+  async createUser(userDetails: CreateUserDetails): Promise<User> {
     if (!userDetails.password) {
       userDetails.password = RandomGenerator.password(10);
-      mustChangePassword = true;
+      userDetails.mustChangePassword = true;
     }
 
-    let newUser = {
-      mustChangePassword: mustChangePassword,
+    if (!userDetails.identityStoreId) {
+      await this.setIdentityStore(userDetails);
+    }
+
+    let validationResult = await this.validate(userDetails);
+    if (!validationResult.success) {
+      throw new ValidationError(validationResult, 'Validation errors occurred.');
+    }
+
+    let newUser: UserBase = {
+      mustChangePassword: userDetails.mustChangePassword,
       password: userDetails.password,
       username: userDetails.username,
       name: userDetails.name,
       email: userDetails.email,
-      identityStoreId: identityStoreId
+      identityStoreId: userDetails.identityStoreId,
+      emailVerified: false,
+      apiKey: RandomGenerator.base16Id(),
+      appMetadata: {},
+      userMetadata: {},
+      disabled: false
     };
 
-    let userModel = new UserModel(newUser);
-    await userModel.save();
+    let userModel = await this.save(newUser);
 
     return userModel;
+  }
+
+  public async setIdentityStore(userDetails: CreateUserDetails) {
+    let system = await SystemModel.get();
+    userDetails.identityStoreId = system.identityStoreId;
+  }
+
+  public async save(user: UserBase): Promise<User> {
+    let userModel = new UserModel(user);
+    return await userModel.save();
+  }
+
+  public async validate(userDetails: CreateUserDetails): Promise<ValidationResultSet> {
+    let validationResult = await createUserValidator.validate(userDetails);
+    return validationResult;
   }
 }
 
