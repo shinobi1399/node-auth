@@ -42,6 +42,16 @@ describe('User service tests', async function () {
       expect(user.mustChangePassword).to.be.true;
     });
 
+    it('Hash password', async function () {
+      sut.hashPassword = sinon.stub().returns('hashed');
+      let spy: SinonStub = <any> sut.save;
+      user.password = 'abc';
+
+      let returnedUser = await sut.createUser(user);
+
+      expect(spy.lastCall.args[0].password).eq('hashed');
+    });
+
     it('when password specified, dont generate password', async function () {
       user.password = 'password';
       user.mustChangePassword = false;

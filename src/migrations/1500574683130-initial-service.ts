@@ -36,7 +36,7 @@ export class InitialSetup implements Migration {
         email: 'no@email.localhost',
         emailVerified: false,
         password: passwordHash,
-        apiKey: RandomGenerator.base16Id(),
+        apiKey: RandomGenerator.id(),
         mustChangePassword: false,
         disabled: false,
         userMetadata: {},

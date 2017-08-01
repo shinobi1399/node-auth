@@ -4,6 +4,7 @@ import {SystemModel} from '../model/system.model';
 import {CreateUserDetails, createUserValidator} from '../Validators/create-user.validator';
 import {ValidationError} from '../Validators/validation-error';
 import {ValidationResultSet} from '../Validators/ValidationResultSet';
+import {hashUtils} from '../common/security/hash-utils';
 
 export class UserService {
   async createUser(userDetails: CreateUserDetails): Promise<User> {
@@ -23,13 +24,13 @@ export class UserService {
 
     let newUser: UserBase = {
       mustChangePassword: userDetails.mustChangePassword,
-      password: userDetails.password,
+      password: await this.hashPassword(userDetails.password),
       username: userDetails.username,
       name: userDetails.name,
       email: userDetails.email,
       identityStoreId: userDetails.identityStoreId,
       emailVerified: false,
-      apiKey: RandomGenerator.base16Id(),
+      apiKey: RandomGenerator.bigId(),
       appMetadata: {},
       userMetadata: {},
       disabled: false
@@ -38,6 +39,10 @@ export class UserService {
     let userModel = await this.save(newUser);
 
     return userModel;
+  }
+
+  public async hashPassword(password: string): Promise<string> {
+    return await hashUtils.hash(password);
   }
 
   public async setIdentityStore(userDetails: CreateUserDetails) {

@@ -38,7 +38,11 @@ export class RandomGenerator {
     return result;
   }
 
-  public static base16Id() {
+  public static id() {
     return RandomGenerator.getString(32, hexValidChars);
+  }
+
+  public static bigId() {
+    return this.id() + this.id();
   }
 }

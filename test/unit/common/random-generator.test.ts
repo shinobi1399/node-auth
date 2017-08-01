@@ -21,12 +21,19 @@ describe('random generator tests', function () {
   });
 
   it('generate base16 id ', function () {
-    let result = RandomGenerator.base16Id();
+    let result = RandomGenerator.id();
 
     expect(result).length(32);
   });
 
   it('generate unique base16 id', function () {
-    expect(RandomGenerator.base16Id()).to.not.equal(RandomGenerator.base16Id());
+    expect(RandomGenerator.id()).to.not.equal(RandomGenerator.id());
   });
+
+  it('generate unique base16 long id', function () {
+    let id = RandomGenerator.bigId();
+    expect(id.length).eq(64);
+  });
+
+
 });
