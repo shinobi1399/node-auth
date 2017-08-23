@@ -41,21 +41,21 @@ export class UserService {
     return userModel;
   }
 
-  public async hashPassword(password: string): Promise<string> {
+  private async hashPassword(password: string): Promise<string> {
     return await hashUtils.hash(password);
   }
 
-  public async setIdentityStore(userDetails: CreateUserDetails) {
+  private async setIdentityStore(userDetails: CreateUserDetails) {
     let system = await SystemModel.get();
     userDetails.identityStoreId = system.identityStoreId;
   }
 
-  public async save(user: UserBase): Promise<User> {
+  private async save(user: UserBase): Promise<User> {
     let userModel = new UserModel(user);
     return await userModel.save();
   }
 
-  public async validate(userDetails: CreateUserDetails): Promise<ValidationResultSet> {
+  private async validate(userDetails: CreateUserDetails): Promise<ValidationResultSet> {
     let validationResult = await createUserValidator.validate(userDetails);
     return validationResult;
   }

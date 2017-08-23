@@ -6,7 +6,7 @@ import {setupTestMongoDb} from '../common/mongo.common';
 
 (<any>mongoose).Promise = global.Promise;
 
-describe('identity store tests', async function () {
+describe('[integration] identity store tests', async function () {
   let db: mongo.Db;
   let store: IdentityStore;
 

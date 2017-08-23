@@ -5,6 +5,7 @@ import {expect, use as chaiUse} from 'chai';
 import {SinonStub} from 'sinon';
 import * as mongoose from 'mongoose';
 import {ValidationResultSet} from '../../src/Validators/ValidationResultSet';
+import {any} from '../utils';
 
 chaiUse(require('chai-as-promised'));
 
@@ -13,9 +14,10 @@ describe('User service tests', async function () {
   let user: User = <any> {};
   beforeEach(function () {
     sut = new UserService();
-    sut.save = sinon.stub();
-    sut.validate = sinon.stub().returns({success: true});
-    sut.setIdentityStore = sinon.stub();
+    (<any>sut).save = sinon.stub();
+    (<any> sut).validate = sinon.stub().returns({success: true});
+    (<any>sut).setIdentityStore = sinon.stub();
+    any(sut).hashPassword = sinon.stub().returns('hashed');
   });
 
   describe('create  user tests', async function () {
@@ -23,7 +25,7 @@ describe('User service tests', async function () {
 
       await sut.createUser(user);
 
-      expect((<SinonStub>sut.setIdentityStore).called);
+      expect((<SinonStub>(<any>sut).setIdentityStore).called);
     });
 
     it('when identity store specified, dont default identity store', async function () {
@@ -31,7 +33,7 @@ describe('User service tests', async function () {
       user.identityStoreId = mongoose.Types.ObjectId();
       await sut.createUser(user);
 
-      expect((<SinonStub>sut.setIdentityStore).notCalled);
+      expect((<SinonStub> (<any>sut).setIdentityStore).notCalled);
     });
 
     it('when no password specified, generate password and set must change password to true', async function () {
@@ -43,8 +45,8 @@ describe('User service tests', async function () {
     });
 
     it('Hash password', async function () {
-      sut.hashPassword = sinon.stub().returns('hashed');
-      let spy: SinonStub = <any> sut.save;
+      (<any>sut).hashPassword = sinon.stub().returns('hashed');
+      let spy: SinonStub = any(sut).save;
       user.password = 'abc';
 
       let returnedUser = await sut.createUser(user);
@@ -63,7 +65,7 @@ describe('User service tests', async function () {
     });
 
     it('when validation error, raise exception and do not save user', async function () {
-      sut.validate = sinon.stub().returns(Promise.resolve(
+      any(sut).validate = sinon.stub().returns(Promise.resolve(
         new ValidationResultSet().add({status: 'Error', code: '', message: ''})));
 
       let p = sut.createUser(user);
@@ -73,7 +75,14 @@ describe('User service tests', async function () {
     it('saves user record', async function () {
       await sut.createUser(user);
 
-      expect((<SinonStub>sut.save).called);
+      expect((<SinonStub>any(sut).save).called);
+    });
+
+  });
+
+  describe('update user tests', async function () {
+    it('', async function () {
+
     });
 
   });

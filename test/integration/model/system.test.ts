@@ -17,7 +17,7 @@ export class SystemBuilder {
   }
 }
 
-describe('system tests', function () {
+describe('[integration] system tests', function () {
   let sut: SystemModelEx = SystemModel;
   let system: System;
   let savedSystem: System;

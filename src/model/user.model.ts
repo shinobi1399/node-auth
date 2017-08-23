@@ -14,8 +14,8 @@ export interface UserBase {
   password: string;
   apiKey: string;
   disabled: boolean;
-  userMetadata: object;
-  appMetadata: object;
+  userMetadata: any;
+  appMetadata: any;
   mustChangePassword: boolean;
   identityStoreId: mongoose.Types.ObjectId;
 

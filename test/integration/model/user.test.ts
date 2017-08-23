@@ -5,7 +5,7 @@ import {expect} from 'chai';
 import {IdentityStoreBuilder} from './identity-store.test';
 import {ObjectID} from 'bson';
 
-describe('user model tests', async function () {
+describe('[integration] user model tests', async function () {
   let db: Db;
   let sut: User;
 
